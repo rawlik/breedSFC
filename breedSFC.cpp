@@ -4,6 +4,39 @@ array< Tile*, 4 > Tile::neighbours() {
    return cube->neighbours(face, x, y);
 }
 
+vector3D Tile::getNormal() {
+   if      (face == LEFT)   return vector3D({-1, 0, 0});
+   else if (face == FRONT)  return vector3D({0, -1, 0});
+   else if (face == RIGHT)  return vector3D({1, 0, 0});
+   else if (face == BACK)   return vector3D({0, 1, 0});
+   else if (face == TOP)    return vector3D({0, 0, 1});
+   else if (face == BOTTOM) return vector3D({0, 0, -1});
+   else  // will not happen
+      return vector3D({0, 0, 0});
+}
+
+point3D Tile::getCenter() {
+   coordinate x_face, y_face;
+
+   coordinate half_face = coordinate(cube->N) / coordinate(2);
+
+   x_face = x - half_face;
+   y_face = y - half_face;
+
+   if      (face == LEFT)   return point3D({-half_face, -x_face, y_face});
+   else if (face == FRONT)  return point3D({x_face, -half_face, y_face});
+   else if (face == RIGHT)  return point3D({half_face, x_face, y_face});
+   else if (face == BACK)   return point3D({-x_face, half_face, y_face});
+   else if (face == TOP)    return point3D({x_face, y_face, half_face});
+   else if (face == BOTTOM) return point3D({-y_face, x_face, -half_face});
+   else  // will not happen
+      return point3D({0, 0, 0});
+}
+
+array<point3D, 4> Tile::getPoints() {
+
+}
+
 Face::Face(int Nrows, int Ncols) : Nrows(Nrows), Ncols(Ncols) {
    tiles = new Tile[Nrows * Ncols];
 }

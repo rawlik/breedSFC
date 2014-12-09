@@ -11,6 +11,11 @@ using namespace std;
 #include "TView.h"
 #include "TPolyMarker3D.h"
 
+typedef double coordinate;
+typedef array<coordinate, 3> point3D;
+typedef array<coordinate, 2> point2D;
+typedef array<coordinate, 3> vector3D;
+
 enum face_t {
    LEFT = 0,
    FRONT = 1,
@@ -21,6 +26,8 @@ enum face_t {
 };
 
 class SFCCube;
+class Tile;
+class Face;
 
 class Tile {
 public:
@@ -31,6 +38,10 @@ public:
    char ch = '#';
 
    array< Tile*, 4 > neighbours();
+
+   vector3D getNormal();
+   point3D getCenter();
+   array<point3D, 4> getPoints();
 };
 
 class Face {
