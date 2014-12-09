@@ -24,12 +24,21 @@ FLAGS=  -O2 \
 		-lm \
 		-ldl
 
-PROGRAMS = breedSFC
+DEPS = breedSFC.h
+PROGRAMS = playground tests
+PROGRAMS_OBJS = $(foreach X,$(PROGRAMS),$(X).o)
+OBJS = breedSFC.o
 
 all: $(PROGRAMS)
 
-breedSFC: breedSFC.cpp breedSFC.h
-	$(CC) $(FLAGS) -o $@ $<
+%.o: %.cpp $(DEPS)
+	$(CC) $(FLAGS) -c -o $@ $<
+
+playground: $(OBJS) playground.o
+	$(CC) $(FLAGS) -o $@ $^
+
+tests: $(OBJS) tests.o
+	$(CC) $(FLAGS) -o $@ $^
 
 clean:
-	rm -f $(PROGRAMS)
+	rm -f $(PROGRAMS) $(OBJS)
