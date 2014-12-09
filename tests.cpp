@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include <string>
 
 #include "breedSFC.h"
 
@@ -24,7 +25,6 @@ bool test_square_neighbours(Square * square) {
 
 bool test_neighbours(int N) {
    SFCCube c = SFCCube(N);
-   c.print();
 
    bool pass = true;
    
@@ -42,19 +42,46 @@ bool test_neighbours(int N) {
    return pass;
 }
 
+bool test_all_sizes(bool (*test)(int), string name, vector<int> sizes) {
+    bool all_pass = true;
+
+    cout << "    " << name << ": ";
+
+    for (auto N : sizes) {
+        bool pass = test(N);
+
+        if (pass)
+            cout << "\033[1;32m" << "✓ ";
+        else {
+            all_pass = false;
+            cout << "\033[1;31m" << "✘ ";
+        }
+    }
+
+    cout << '\r';
+    if (all_pass)
+        cout << "\033[1;32m" << "✔";
+    else
+        cout << "\033[1;31m" << "✗ ";
+
+    cout << "\033[0m" << endl;
+
+    return all_pass;
+}
+
 
 int main(int argc, char **argv) {
-    bool pass = false;
-
     vector<int> Ns = {1, 2, 3, 4, 5, 10, 100};
-    auto Pass = vector<bool>(Ns.size(), false);
-    int i = 0;
 
-    for (auto N : Ns) {
-        Pass[i++] = test_neighbours(N);
-    }
+    bool pass = true;
 
-    for (auto pass : Pass) {
-        cout << pass;
-    }
+    pass = pass && test_all_sizes(test_neighbours, "neighbours test", Ns);
+
+    if (pass)
+        cout << "\033[1;32m" << "✔";
+    else
+        cout << "\033[1;31m" << "✗ ";
+
+    cout << "\033[0m" << endl;
+
 }
