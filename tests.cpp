@@ -4,14 +4,14 @@
 
 #include "breedSFC.h"
 
-bool test_square_neighbours(Square * square) {
+bool test_tile_neighbours(Tile * tile) {
    bool pass = true;
 
-   for (auto neighbour : square->neighbours()) {
+   for (auto neighbour : tile->neighbours()) {
       int i = 0;
       
       for (auto next_neighbour : neighbour->neighbours()) {
-         if (next_neighbour == square)
+         if (next_neighbour == tile)
             i++;
       }
 
@@ -31,7 +31,7 @@ bool test_neighbours(int N) {
    for (int face = 0; face < 6; ++face) {
       for (int x = 0; x < N; ++x) {
          for (int y = 0; y < N; ++y) {
-            if (!test_square_neighbours(c.i(face_t(face), x, y))) {
+            if (!test_tile_neighbours(c.i(face_t(face), x, y))) {
                cout << face << x << y;
                pass = false;
             }

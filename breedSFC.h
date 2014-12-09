@@ -22,7 +22,7 @@ enum face_t {
 
 class SFCCube;
 
-class Square {
+class Tile {
 public:
    SFCCube * cube;
    face_t face;
@@ -30,18 +30,18 @@ public:
    int y;
    char ch = '#';
 
-   array< Square*, 4 > neighbours();
+   array< Tile*, 4 > neighbours();
 };
 
 class Face {
 public:
    int Nrows;
    int Ncols;
-   Square * squares;
+   Tile * tiles;
 
    Face(int Nrows, int Ncols);
    ~Face();
-   Square * i(int row, int column);
+   Tile * i(int row, int column);
 };
 
 class SFCCube {
@@ -52,7 +52,7 @@ public:
    Face bot_cap;
 
    SFCCube(int N);
-   Square * i(face_t face, int x, int y);
-   array< Square*, 4 > neighbours(face_t face, int x, int y);
+   Tile * i(face_t face, int x, int y);
+   array< Tile*, 4 > neighbours(face_t face, int x, int y);
    void print();
 };

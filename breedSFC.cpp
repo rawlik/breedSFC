@@ -1,37 +1,37 @@
 #include "breedSFC.h"
 
-array< Square*, 4 > Square::neighbours() {
+array< Tile*, 4 > Tile::neighbours() {
    return cube->neighbours(face, x, y);
 }
 
 Face::Face(int Nrows, int Ncols) : Nrows(Nrows), Ncols(Ncols) {
-   squares = new Square[Nrows * Ncols];
+   tiles = new Tile[Nrows * Ncols];
 }
 
 Face::~Face() {
-   delete[] squares;
+   delete[] tiles;
 }
 
-Square * Face::i(int row, int column) {
-   return &squares[row * Ncols + column];
+Tile * Face::i(int row, int column) {
+   return &tiles[row * Ncols + column];
 }
 
 SFCCube::SFCCube(int N) : N(N), side(N, 4 * N), top_cap(N, N), bot_cap(N, N) {
    for (int face = 0; face < 6; ++face) {
       for (int x = 0; x < N; ++x) {
          for (int y = 0; y < N; ++y) {
-            Square * square = i(face_t(face), x, y);
+            Tile * tile = i(face_t(face), x, y);
 
-            square->cube = this;
-            square->face = face_t(face);
-            square->x = x;
-            square->y = y;
+            tile->cube = this;
+            tile->face = face_t(face);
+            tile->x = x;
+            tile->y = y;
          }
       }
    }
 }
 
-Square * SFCCube::i(face_t face, int x, int y) {
+Tile * SFCCube::i(face_t face, int x, int y) {
    if (face == LEFT || face == FRONT || face == RIGHT || face == BACK) {
       return side.i(N - y - 1, int(face) * N + x);
    } else if (face == TOP) {
@@ -42,17 +42,17 @@ Square * SFCCube::i(face_t face, int x, int y) {
    }
 }
 
-array< Square*, 4 > SFCCube::neighbours(face_t face, int x, int y) {
+array< Tile*, 4 > SFCCube::neighbours(face_t face, int x, int y) {
    x = x % N;
    y = y % N;
 
-   Square * top;
-   Square * bottom;
-   Square * left;
-   Square * right;
+   Tile * top;
+   Tile * bottom;
+   Tile * left;
+   Tile * right;
 
    if (face == LEFT || face == FRONT || face == RIGHT || face == BACK) {
-      // the square is on the side of the cube
+      // the tile is on the side of the cube
       int row = N - y - 1;
       int col = int(face) * N + x;
 
@@ -107,7 +107,7 @@ array< Square*, 4 > SFCCube::neighbours(face_t face, int x, int y) {
 
    }
 
-   return array< Square*, 4 >{ {left, top, right, bottom} };
+   return array< Tile*, 4 >{ {left, top, right, bottom} };
 }
 
 void SFCCube::print() {

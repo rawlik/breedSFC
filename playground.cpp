@@ -1,13 +1,13 @@
 #include "breedSFC.h"
 
-bool test_neighbours(Square * square) {
+bool test_neighbours(Tile * tile) {
    bool pass = true;
 
-   for (auto neighbour : square->neighbours()) {
+   for (auto neighbour : tile->neighbours()) {
       int i = 0;
       
       for (auto next_neighbour : neighbour->neighbours()) {
-         if (next_neighbour == square)
+         if (next_neighbour == tile)
             i++;
       }
 
@@ -28,7 +28,7 @@ int main(int argc, char **argv) {
    c.i(LEFT, 0, 0)->ch = '!';
    cout << endl;
    // c.neighbours(0, 2, 2)[0]->ch = '*';
-   auto square = c.i(TOP, 2, 2);
+   auto tile = c.i(TOP, 2, 2);
 
    c.print();
 
