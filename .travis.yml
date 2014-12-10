@@ -4,5 +4,4 @@ before_install:
 - brew tap homebrew/science
 - brew update
 - brew install root
-os:
-- osx
+os: osx
