@@ -1,5 +1,9 @@
 #include "breedSFC.h"
 
+bool eq(coordinate a, coordinate b) {
+   return fabs(a - b) < coordinate(1e-6);
+}
+
 array< Tile*, 4 > Tile::neighbours() {
    return cube->neighbours(face, x, y);
 }
