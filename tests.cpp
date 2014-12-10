@@ -106,7 +106,7 @@ int main(int argc, char **argv) {
    bool pass = true;
 
    pass = pass && test_all_sizes(test_neighbours, "neighbours test", Ns);
-   pass = pass && test_all_sizes(test_centers, "centers test", Ns);
+   pass = pass && test_all_sizes(test_centers,    "centers test   ", Ns);
 
    if (pass)
       cout << "\033[1;32m" << "✔";
