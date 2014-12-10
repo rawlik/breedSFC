@@ -42,8 +42,9 @@ bool test_neighbours(int N) {
    return pass;
 }
 
-bool test_centers(int N) {
-    SFCCube c = SFCCube(N);
+bool test_get_tiles(int N) {
+   return SFCCube(N).getTiles().size() == N * N * 6;
+}
 
     bool pass = true;
 
@@ -137,6 +138,7 @@ int main(int argc, char **argv) {
 
    bool pass = true;
 
+   pass = pass && test_all_sizes(test_get_tiles,  "get tiles test ", Ns);
    pass = pass && test_all_sizes(test_neighbours, "neighbours test", Ns);
    pass = pass && test_all_sizes(test_centers,    "centers test   ", Ns);
    pass = pass && test_all_sizes(test_points,     "points test    ", Ns);
