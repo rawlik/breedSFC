@@ -4,10 +4,6 @@
 
 #include "breedSFC.h"
 
-bool eq(coordinate a, coordinate b) {
-   return fabs(a - b) < coordinate(1e-6);
-}
-
 bool test_tile_neighbours(Tile * tile) {
    bool pass = true;
 

@@ -16,6 +16,10 @@ typedef array<coordinate, 3> point3D;
 typedef array<coordinate, 2> point2D;
 typedef array<coordinate, 3> vector3D;
 
+bool eq(coordinate a, coordinate b) {
+   return fabs(a - b) < coordinate(1e-6);
+}
+
 enum face_t {
    LEFT = 0,
    FRONT = 1,
