@@ -1,8 +1,6 @@
 language: cpp
 - clang
 before_install:
-- if [ $TRAVIS_OS_NAME == linux ]; then sudo apt-get install root-system clang; fi
-- if [ $TRAVIS_OS_NAME == osx ]; then brew tap homebrew/science && brew update && brew install root; fi
+- brew tap homebrew/science && brew update && brew install root
 os:
-- linux
 - osx
