@@ -70,4 +70,5 @@ public:
    Tile * i(face_t face, int x, int y);
    array< Tile*, 4 > neighbours(face_t face, int x, int y);
    void print();
+   vector<Tile*> getTiles();
 };

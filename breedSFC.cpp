@@ -211,3 +211,14 @@ void SFCCube::print() {
       cout << endl;
    }
 }
+
+vector<Tile*> SFCCube::getTiles() {
+   vector<Tile*> tiles;
+
+   for (int face = 0; face < 6; ++face)
+      for (int x = 0; x < N; ++x)
+         for (int y = 0; y < N; ++y)
+            tiles.push_back(i(face_t(face), x, y));
+
+   return tiles;
+}
