@@ -1,5 +1,7 @@
 #include <iostream>
+#include <assert.h>
 #include <array>
+#include <vector>
 
 using namespace std;
 

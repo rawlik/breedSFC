@@ -38,7 +38,40 @@ point3D Tile::getCenter() {
 }
 
 array<point3D, 4> Tile::getPoints() {
+   array<point3D, 4> points;
+   int i = 0;
 
+   for (coordinate dx = -0.5; dx < 0.6; dx += 1.0) {
+      if (!eq(getNormal()[0], 0))
+         dx = 0;
+
+      for (coordinate dy = -0.5; dy < 0.6; dy += 1.0) {
+         if (!eq(getNormal()[1], 0))
+            dy = 0;
+
+         for (coordinate dz = -0.5; dz < 0.6; dz += 1.0) {
+            if (!eq(getNormal()[2], 0))
+               dz = 0;
+
+            points[i++] = point3D({getCenter()[0] + dx,
+                                   getCenter()[1] + dy,
+                                   getCenter()[2] + dz});
+
+            if (!eq(getNormal()[2], 0))
+               break;
+         }
+
+         if (!eq(getNormal()[1], 0))
+            break;
+      }
+
+      if (!eq(getNormal()[0], 0))
+         break;
+   }
+
+   assert(i == 4);
+
+   return points;
 }
 
 Face::Face(int Nrows, int Ncols) : Nrows(Nrows), Ncols(Ncols) {

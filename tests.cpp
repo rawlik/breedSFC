@@ -72,6 +72,38 @@ bool test_centers(int N) {
    return pass;
 }
 
+bool test_points(int N) {
+    SFCCube c = SFCCube(N);
+
+    bool pass = true;
+
+    for (int face = 0; face < 6; ++face) {
+      for (int x = 0; x < N; ++x) {
+         for (int y = 0; y < N; ++y) {
+            auto tile = c.i(face_t(face), x, y);
+
+            coordinate half_face = coordinate(c.N) / coordinate(2);
+            coordinate face_coordinate;
+
+            for (auto point : tile->getPoints()) {
+               if      (face == LEFT)   face_coordinate = -point[0];
+               else if (face == FRONT)  face_coordinate = -point[1];
+               else if (face == RIGHT)  face_coordinate =  point[0];
+               else if (face == BACK)   face_coordinate =  point[1];
+               else if (face == TOP)    face_coordinate =  point[2];
+               else if (face == BOTTOM) face_coordinate = -point[2];
+
+               if (!eq(face_coordinate, half_face)) {
+                  pass = false;
+               }
+            }
+         }
+      }
+   }
+
+   return pass;
+}
+
 bool test_all_sizes(bool (*test)(int), string name, vector<int> sizes) {
    bool all_pass = true;
 
@@ -107,6 +139,7 @@ int main(int argc, char **argv) {
 
    pass = pass && test_all_sizes(test_neighbours, "neighbours test", Ns);
    pass = pass && test_all_sizes(test_centers,    "centers test   ", Ns);
+   pass = pass && test_all_sizes(test_points,     "points test    ", Ns);
 
    if (pass)
       cout << "\033[1;32m" << "✔";
