@@ -1,7 +1,8 @@
 language: cpp
 compiler: clang
 before_install:
-- brew tap homebrew/science
-- brew update
-- brew install root
-os: osx
+- apt-get update
+- apt-get install root-system
+# - brew tap homebrew/science
+# - brew update
+# - brew install root
