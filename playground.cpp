@@ -16,12 +16,14 @@ int main(int argc, char **argv) {
 
    TApplication theApp("App", &argc, argv);
 
-   TCanvas * c1 = new TCanvas("c1","PolyLine3D & PolyMarker3D Window",200,10,700,500);
-   TPad * p1 = new TPad("p1","p1",0.05,0.02,0.95,0.82,46,3,1);
+   TCanvas * c1 = new TCanvas("c1","PolyLine3D & PolyMarker3D Window",700,700);
+   // TPad * p1 = new TPad("p1","p1",0.05,0.02,0.95,0.82,46,3,1);
+   TPad * p1 = new TPad("p1","p1",0.05,0.05,0.95,0.95);
    p1->Draw();
    p1->cd();
    TView * view = TView::CreateView(1);
-   view->SetRange(-1,-1,-1,1,1,1);
+   coordinate range = 0.6;
+   view->SetRange(-range, -range, -range, range, range, range);
    view->ShowAxis();
    view->SetPerspective();
 
