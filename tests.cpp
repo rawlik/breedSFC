@@ -100,6 +100,42 @@ bool test_points(int N) {
 
          if (!eq(face_coordinate, 0.5)) {
             pass = false;
+
+            logfile << "Points of tile " << tile->str() << " don't lie on the face. ";
+            logfile << "Coordinate is " << face_coordinate << " and expected 0.5";
+            logfile << endl;
+         }
+      }
+   }
+
+   return pass;
+}
+
+bool test_tile_edge(int N) {
+   SFCCube c = SFCCube(N);
+
+   bool pass = true;
+
+   for (auto tile : c.getTiles()) {
+      coordinate face_coordinate;
+
+      XYZVector previous;
+      bool has_previous = false;
+
+      for (auto point : tile->getPoints()) {
+         if (has_previous) {
+            XYZVector diff = XYZVector(point - previous);
+            auto diff_len = sqrt(diff.Dot(diff));
+
+            if (!eq(diff_len, coordinate(1) / c.N)) {
+               logfile << "Length of an edge is " << diff_len << ". ";
+               logfile << "Expected " << coordinate(1) / c.N << ". " << endl;
+
+               pass = false;
+            }
+
+            has_previous = true;
+            previous = point;
          }
       }
    }
@@ -145,6 +181,7 @@ int main(int argc, char **argv) {
    vpass.push_back(test_all_sizes(test_neighbours, "neighbours test", Ns));
    vpass.push_back(test_all_sizes(test_centers,    "centers test   ", Ns));
    vpass.push_back(test_all_sizes(test_points,     "points test    ", Ns));
+   vpass.push_back(test_all_sizes(test_tile_edge,  "edges test     ", Ns));
 
    bool pass = true;
    for (auto p : vpass)
