@@ -1,5 +1,13 @@
 #include "breedSFC.h"
 
+#include "TApplication.h"
+#include "TCanvas.h"
+#include "TPaveText.h"
+#include "TPolyLine3D.h"
+#include "TPad.h"
+#include "TView.h"
+#include "TPolyMarker3D.h"
+
 bool test_neighbours(Tile * tile) {
    bool pass = true;
 

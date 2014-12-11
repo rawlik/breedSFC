@@ -1,17 +1,10 @@
+#include <cmath>
 #include <iostream>
-#include <assert.h>
+#include <cassert>
 #include <array>
 #include <vector>
 
 using namespace std;
-
-#include "TApplication.h"
-#include "TCanvas.h"
-#include "TPaveText.h"
-#include "TPolyLine3D.h"
-#include "TPad.h"
-#include "TView.h"
-#include "TPolyMarker3D.h"
 
 typedef double coordinate;
 typedef array<coordinate, 3> point3D;
