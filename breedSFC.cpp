@@ -56,28 +56,19 @@ XYZPoint Tile::getCenter() {
 array<XYZPoint, 4> Tile::getPoints() {
    coordinate a = coordinate(1) / (2 * coordinate(cube->N));
 
-   array<XYZVector, 4> displacements = { XYZVector(-a, -a, 0),
-                                         XYZVector(-a,  a, 0),
-                                         XYZVector( a,  a, 0),
-                                         XYZVector( a, -a, 0) };
+   array<XYZVector, 4> displacements = { XYZVector(-a, 0, -a),
+                                         XYZVector(-a, 0,  a),
+                                         XYZVector( a, 0,  a),
+                                         XYZVector( a, 0, -a) };
 
-   Rotation3D rotation;
-
-   if      (face == LEFT)   rotation = Rotation3D(RotationY(90));
-   else if (face == FRONT)  rotation = Rotation3D(RotationX(90));
-   else if (face == RIGHT)  rotation = Rotation3D(RotationY(90));
-   else if (face == BACK)   rotation = Rotation3D(RotationX(90));
-   else if (face == TOP)    rotation = Rotation3D();
-   else if (face == BOTTOM) rotation = Rotation3D();
-   else  // will not happen
-      rotation = Rotation3D();
-
-
-   array<XYZPoint, 4> points;
    int i = 0;
+   array<XYZPoint, 4> points;
+
+   Rotation3D r = getTransformFromFront();
+
    for ( auto displacement : displacements) {
-      points[i++] = getCenter() + displacement;
-   }
+      points[i++] = r * ((r.Inverse() * getCenter()) + displacement);
+   }                           
 
    return points;
 }
