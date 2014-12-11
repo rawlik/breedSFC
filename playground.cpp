@@ -21,7 +21,7 @@ int main(int argc, char **argv) {
    p1->Draw();
    p1->cd();
    TView * view = TView::CreateView(1);
-   view->SetRange(-N,-N,-N,N,N,N);
+   view->SetRange(-1,-1,-1,1,1,1);
    view->ShowAxis();
    view->SetPerspective();
 
@@ -34,7 +34,7 @@ int main(int argc, char **argv) {
       int j = 0;
       TPolyLine3D * outline = new TPolyLine3D(4);
       for (auto point : tile->getPoints()) {
-         outline->SetPoint(j++, center.x(), center.y(), center.z());
+         outline->SetPoint(j++, point.x(), point.y(), point.z());
       }
       outline->Draw();
    }
