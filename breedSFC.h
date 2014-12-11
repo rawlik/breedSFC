@@ -3,13 +3,28 @@
 #include <cassert>
 #include <array>
 #include <vector>
+#include <string>
+#include <sstream>
 
 using namespace std;
 
+// ROOT includes
+#include <Math/Point3D.h>
+#include <Math/Vector3D.h>
+#include <Math/Point2D.h>
+#include <Math/Vector2D.h>
+#include <Math/RotationX.h>
+#include <Math/RotationY.h>
+#include <Math/RotationZ.h>
+#include <Math/Rotation3D.h>
+#include <TMath.h>
+
+using namespace ROOT::Math;
+
+const auto pi = TMath::Pi();
+const auto pi2 = TMath::Pi() / 2.;
+
 typedef double coordinate;
-typedef array<coordinate, 3> point3D;
-typedef array<coordinate, 2> point2D;
-typedef array<coordinate, 3> vector3D;
 
 bool eq(coordinate a, coordinate b);
 
@@ -30,15 +45,18 @@ class Tile {
 public:
    SFCCube * cube;
    face_t face;
-   int x;
-   int y;
+   int l;
+   int m;
    char ch = '#';
 
    array< Tile*, 4 > neighbours();
 
-   vector3D getNormal();
-   point3D getCenter();
-   array<point3D, 4> getPoints();
+   XYVector getFaceVector();
+   XYZVector getNormal();
+   Rotation3D getTransformFromFront();
+   XYZPoint getCenter();
+   string str();
+   array<XYZPoint, 4> getPoints();
 };
 
 class Face {
@@ -60,8 +78,8 @@ public:
    Face bot_cap;
 
    SFCCube(int N);
-   Tile * i(face_t face, int x, int y);
-   array< Tile*, 4 > neighbours(face_t face, int x, int y);
+   Tile * i(face_t face, int l, int m);
+   array< Tile*, 4 > neighbours(face_t face, int l, int m);
    void print();
    vector<Tile*> getTiles();
 };

@@ -1,8 +1,11 @@
 #include <iostream>
+#include <fstream>
 #include <vector>
 #include <string>
 
 #include "breedSFC.h"
+
+ofstream logfile;
 
 bool test_tile_neighbours(Tile * tile) {
    bool pass = true;
@@ -28,14 +31,12 @@ bool test_neighbours(int N) {
 
    bool pass = true;
    
-   for (int face = 0; face < 6; ++face) {
-      for (int x = 0; x < N; ++x) {
-         for (int y = 0; y < N; ++y) {
-            if (!test_tile_neighbours(c.i(face_t(face), x, y))) {
-               cout << face << x << y;
-               pass = false;
-            }
-         }
+   for (auto tile : c.getTiles()) {
+      if (!test_tile_neighbours(tile)) {
+         pass = false;
+
+         logfile << "The tile " << tile->str() << " is not a neighbour of ";
+         logfile << "one of its neighbours." << endl; 
       }
    }
 
@@ -43,7 +44,15 @@ bool test_neighbours(int N) {
 }
 
 bool test_get_tiles(int N) {
-   return SFCCube(N).getTiles().size() == N * N * 6;
+   auto Ntiles = SFCCube(N).getTiles().size();
+   bool pass = (Ntiles == N * N * 6);
+
+   if (!pass) {
+      logfile << "The cube has " << Ntiles << " tiles. Expected ";
+      logfile << N * N * 6 << "." << endl;
+   }
+
+   return pass;
 }
 
 bool test_centers(int N) {
@@ -52,18 +61,21 @@ bool test_centers(int N) {
    bool pass = true;
 
    for (auto tile : c.getTiles()) {
-      coordinate half_face = coordinate(c.N) / coordinate(2);
       coordinate face_coordinate;
 
-      if      (tile->face == LEFT)   face_coordinate = -tile->getCenter()[0];
-      else if (tile->face == FRONT)  face_coordinate = -tile->getCenter()[1];
-      else if (tile->face == RIGHT)  face_coordinate =  tile->getCenter()[0];
-      else if (tile->face == BACK)   face_coordinate =  tile->getCenter()[1];
-      else if (tile->face == TOP)    face_coordinate =  tile->getCenter()[2];
-      else if (tile->face == BOTTOM) face_coordinate = -tile->getCenter()[2];
+      if      (tile->face == LEFT)   face_coordinate = -tile->getCenter().x();
+      else if (tile->face == FRONT)  face_coordinate = -tile->getCenter().y();
+      else if (tile->face == RIGHT)  face_coordinate =  tile->getCenter().x();
+      else if (tile->face == BACK)   face_coordinate =  tile->getCenter().y();
+      else if (tile->face == TOP)    face_coordinate =  tile->getCenter().z();
+      else if (tile->face == BOTTOM) face_coordinate = -tile->getCenter().z();
 
-      if (!eq(face_coordinate, half_face)) {
+      if (!eq(face_coordinate, 0.5)) {
          pass = false;
+
+         logfile << "test_centers: face_coordinate is " << face_coordinate;
+         logfile << ", expected " << 0.5 << ". The tile is " << tile->str() << ".";
+         logfile << endl;
       }
    }
 
@@ -76,18 +88,17 @@ bool test_points(int N) {
    bool pass = true;
 
    for (auto tile : c.getTiles()) {
-      coordinate half_face = coordinate(c.N) / coordinate(2);
       coordinate face_coordinate;
 
       for (auto point : tile->getPoints()) {
-         if      (tile->face == LEFT)   face_coordinate = -point[0];
-         else if (tile->face == FRONT)  face_coordinate = -point[1];
-         else if (tile->face == RIGHT)  face_coordinate =  point[0];
-         else if (tile->face == BACK)   face_coordinate =  point[1];
-         else if (tile->face == TOP)    face_coordinate =  point[2];
-         else if (tile->face == BOTTOM) face_coordinate = -point[2];
+         if      (tile->face == LEFT)   face_coordinate = -point.x();
+         else if (tile->face == FRONT)  face_coordinate = -point.y();
+         else if (tile->face == RIGHT)  face_coordinate =  point.x();
+         else if (tile->face == BACK)   face_coordinate =  point.y();
+         else if (tile->face == TOP)    face_coordinate =  point.z();
+         else if (tile->face == BOTTOM) face_coordinate = -point.z();
 
-         if (!eq(face_coordinate, half_face)) {
+         if (!eq(face_coordinate, 0.5)) {
             pass = false;
          }
       }
@@ -125,6 +136,8 @@ bool test_all_sizes(bool (*test)(int), string name, vector<int> sizes) {
 
 
 int main(int argc, char **argv) {
+   logfile.open("tests.log");
+
    vector<int> Ns = {1, 2, 3, 4, 5, 10, 100};
    vector<bool> vpass;
 
@@ -140,8 +153,14 @@ int main(int argc, char **argv) {
    // draw if passed all tests
    if (pass)
       cout << "\033[1;32m" << "✔";
-   else
+   else {
       cout << "\033[1;31m" << "✗ ";
+      cout << endl;
+      cout << endl;
+      cout << "Test failed. Output written to tests.log." << endl;
+   }
 
    cout << "\033[0m" << endl;
+
+   logfile.close();
 }

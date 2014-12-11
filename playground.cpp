@@ -9,7 +9,7 @@
 #include "TPolyMarker3D.h"
 
 int main(int argc, char **argv) {
-   int N = 2;
+   int N = 3;
 
    SFCCube c = SFCCube(N);
    c.print();
@@ -29,12 +29,12 @@ int main(int argc, char **argv) {
    int i = 0;
    for (auto tile : c.getTiles()) {
       auto center = tile->getCenter();
-      centers->SetPoint(i++, center[0], center[1], center[2]);
+      centers->SetPoint(i++, center.x(), center.y(), center.z());
 
       int j = 0;
       TPolyLine3D * outline = new TPolyLine3D(4);
       for (auto point : tile->getPoints()) {
-         outline->SetPoint(j++, point[0], point[1], point[2]);
+         outline->SetPoint(j++, center.x(), center.y(), center.z());
       }
       outline->Draw();
    }

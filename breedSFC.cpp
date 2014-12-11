@@ -5,71 +5,79 @@ bool eq(coordinate a, coordinate b) {
 }
 
 array< Tile*, 4 > Tile::neighbours() {
-   return cube->neighbours(face, x, y);
+   return cube->neighbours(face, l, m);
 }
 
-vector3D Tile::getNormal() {
-   if      (face == LEFT)   return vector3D({-1, 0, 0});
-   else if (face == FRONT)  return vector3D({0, -1, 0});
-   else if (face == RIGHT)  return vector3D({1, 0, 0});
-   else if (face == BACK)   return vector3D({0, 1, 0});
-   else if (face == TOP)    return vector3D({0, 0, 1});
-   else if (face == BOTTOM) return vector3D({0, 0, -1});
+XYVector Tile::getFaceVector() {
+   if (cube->N == 1) return XYVector(0, 0);
+
+   return XYVector(coordinate(l) / coordinate(cube->N) - 0.5 + coordinate(1) / coordinate(2 * cube->N),
+                   coordinate(m) / coordinate(cube->N) - 0.5 + coordinate(1) / coordinate(2 * cube->N));
+}
+
+string Tile::str() {
+   stringstream str;
+
+   str << "(";
+
+   if      (face == LEFT)   str << "left";
+   else if (face == FRONT)  str << "front";
+   else if (face == RIGHT)  str << "right";
+   else if (face == BACK)   str << "back";
+   else if (face == TOP)    str << "top";
+   else if (face == BOTTOM) str << "bottom";
+   else ;
+
+   str << ", " << l << ", " << m << ")";
+   return str.str();
+}
+
+Rotation3D Tile::getTransformFromFront() {
+   if      (face == LEFT)   return Rotation3D(RotationZ(-pi2));
+   else if (face == FRONT)  return Rotation3D();
+   else if (face == RIGHT)  return Rotation3D(RotationZ(pi2));
+   else if (face == BACK)   return Rotation3D(RotationZ(pi));
+   else if (face == TOP)    return Rotation3D(RotationX(-pi2));
+   else if (face == BOTTOM) return Rotation3D(RotationX(pi2));
    else  // will not happen
-      return vector3D({0, 0, 0});
+      return Rotation3D();
 }
 
-point3D Tile::getCenter() {
-   coordinate x_face, y_face;
+XYZVector Tile::getNormal() {
+   return getTransformFromFront() * XYZVector({0, -1, 0});
+}
 
-   coordinate half_face = coordinate(cube->N) / coordinate(2);
+XYZPoint Tile::getCenter() {
+   auto v = getFaceVector();
 
-   x_face = x - half_face;
-   y_face = y - half_face;
+   return getTransformFromFront() * XYZPoint(v.x(), -0.5, v.y());
+}
 
-   if      (face == LEFT)   return point3D({-half_face, -x_face, y_face});
-   else if (face == FRONT)  return point3D({x_face, -half_face, y_face});
-   else if (face == RIGHT)  return point3D({half_face, x_face, y_face});
-   else if (face == BACK)   return point3D({-x_face, half_face, y_face});
-   else if (face == TOP)    return point3D({x_face, y_face, half_face});
-   else if (face == BOTTOM) return point3D({-y_face, x_face, -half_face});
+array<XYZPoint, 4> Tile::getPoints() {
+   coordinate a = coordinate(1) / (2 * coordinate(cube->N));
+
+   array<XYZVector, 4> displacements = { XYZVector(-a, -a, 0),
+                                         XYZVector(-a,  a, 0),
+                                         XYZVector( a,  a, 0),
+                                         XYZVector( a, -a, 0) };
+
+   Rotation3D rotation;
+
+   if      (face == LEFT)   rotation = Rotation3D(RotationY(90));
+   else if (face == FRONT)  rotation = Rotation3D(RotationX(90));
+   else if (face == RIGHT)  rotation = Rotation3D(RotationY(90));
+   else if (face == BACK)   rotation = Rotation3D(RotationX(90));
+   else if (face == TOP)    rotation = Rotation3D();
+   else if (face == BOTTOM) rotation = Rotation3D();
    else  // will not happen
-      return point3D({0, 0, 0});
-}
+      rotation = Rotation3D();
 
-array<point3D, 4> Tile::getPoints() {
-   array<point3D, 4> points;
+
+   array<XYZPoint, 4> points;
    int i = 0;
-
-   for (coordinate dx = -0.5; dx < 0.6; dx += 1.0) {
-      if (!eq(getNormal()[0], 0))
-         dx = 0;
-
-      for (coordinate dy = -0.5; dy < 0.6; dy += 1.0) {
-         if (!eq(getNormal()[1], 0))
-            dy = 0;
-
-         for (coordinate dz = -0.5; dz < 0.6; dz += 1.0) {
-            if (!eq(getNormal()[2], 0))
-               dz = 0;
-
-            points[i++] = point3D({getCenter()[0] + dx,
-                                   getCenter()[1] + dy,
-                                   getCenter()[2] + dz});
-
-            if (!eq(getNormal()[2], 0))
-               break;
-         }
-
-         if (!eq(getNormal()[1], 0))
-            break;
-      }
-
-      if (!eq(getNormal()[0], 0))
-         break;
+   for ( auto displacement : displacements) {
+      points[i++] = getCenter() + displacement;
    }
-
-   assert(i == 4);
 
    return points;
 }
@@ -88,33 +96,33 @@ Tile * Face::i(int row, int column) {
 
 SFCCube::SFCCube(int N) : N(N), side(N, 4 * N), top_cap(N, N), bot_cap(N, N) {
    for (int face = 0; face < 6; ++face) {
-      for (int x = 0; x < N; ++x) {
-         for (int y = 0; y < N; ++y) {
-            Tile * tile = i(face_t(face), x, y);
+      for (int l = 0; l < N; ++l) {
+         for (int m = 0; m < N; ++m) {
+            Tile * tile = i(face_t(face), l, m);
 
             tile->cube = this;
             tile->face = face_t(face);
-            tile->x = x;
-            tile->y = y;
+            tile->l = l;
+            tile->m = m;
          }
       }
    }
 }
 
-Tile * SFCCube::i(face_t face, int x, int y) {
+Tile * SFCCube::i(face_t face, int l, int m) {
    if (face == LEFT || face == FRONT || face == RIGHT || face == BACK) {
-      return side.i(N - y - 1, int(face) * N + x);
+      return side.i(N - m - 1, int(face) * N + l);
    } else if (face == TOP) {
-      return top_cap.i(N - y - 1, x);
+      return top_cap.i(N - m - 1, l);
    } else {
       // face = BOTTOM
-      return bot_cap.i(N - y - 1, x);
+      return bot_cap.i(N - m - 1, l);
    }
 }
 
-array< Tile*, 4 > SFCCube::neighbours(face_t face, int x, int y) {
-   x = x % N;
-   y = y % N;
+array< Tile*, 4 > SFCCube::neighbours(face_t face, int l, int m) {
+   l = l % N;
+   m = m % N;
 
    Tile * top;
    Tile * bottom;
@@ -123,8 +131,8 @@ array< Tile*, 4 > SFCCube::neighbours(face_t face, int x, int y) {
 
    if (face == LEFT || face == FRONT || face == RIGHT || face == BACK) {
       // the tile is on the side of the cube
-      int row = N - y - 1;
-      int col = int(face) * N + x;
+      int row = N - m - 1;
+      int col = int(face) * N + l;
 
       // remember about weird modulo for negative in C!
       left = side.i(row, (4 * N + col - 1) % (4 * N));
@@ -134,46 +142,46 @@ array< Tile*, 4 > SFCCube::neighbours(face_t face, int x, int y) {
          top = side.i(row - 1, col);
       } else {
          // top neighbour on the top cap
-         if      (face == 0) top = top_cap.i(x,     0);
-         else if (face == 1) top = top_cap.i(N-1,   x);
-         else if (face == 2) top = top_cap.i(N-x-1, N-1);
-         else if (face == 3) top = top_cap.i(0,     N-x-1);
+         if      (face == 0) top = top_cap.i(l,     0);
+         else if (face == 1) top = top_cap.i(N-1,   l);
+         else if (face == 2) top = top_cap.i(N-l-1, N-1);
+         else if (face == 3) top = top_cap.i(0,     N-l-1);
       }
 
       if (row < N - 1) {
          bottom = side.i(row + 1, col);
       } else {
          // bottom neighbour in on the bottom cap
-         if      (face == 0) bottom = bot_cap.i(N-x-1, 0);
-         else if (face == 1) bottom = bot_cap.i(0,     x);
-         else if (face == 2) bottom = bot_cap.i(x,     N-1);
-         else if (face == 3) bottom = bot_cap.i(N-1,   N-x-1);            
+         if      (face == 0) bottom = bot_cap.i(N-l-1, 0);
+         else if (face == 1) bottom = bot_cap.i(0,     l);
+         else if (face == 2) bottom = bot_cap.i(l,     N-1);
+         else if (face == 3) bottom = bot_cap.i(N-1,   N-l-1);            
       }
    } else if (face == TOP) {
       // the top cap
-      if (x == 0) left = i(LEFT, N - 1 - y, N - 1);
-      else        left = i(TOP, x - 1, y);
+      if (l == 0) left = i(LEFT, N - 1 - m, N - 1);
+      else        left = i(TOP, l - 1, m);
 
-      if (x == N - 1) right = i(RIGHT, y, N - 1);
-      else            right = i(TOP, x + 1, y);
+      if (l == N - 1) right = i(RIGHT, m, N - 1);
+      else            right = i(TOP, l + 1, m);
 
-      if (y == 0) bottom = i(FRONT, x, N - 1);
-      else        bottom = i(TOP, x, y - 1);
+      if (m == 0) bottom = i(FRONT, l, N - 1);
+      else        bottom = i(TOP, l, m - 1);
 
-      if (y == N - 1) top = i(BACK, N - x - 1, N - 1);
-      else            top = i(TOP, x, y + 1);       
+      if (m == N - 1) top = i(BACK, N - l - 1, N - 1);
+      else            top = i(TOP, l, m + 1);       
    } else if (face == BOTTOM) {
-      if (x == 0) left = i(LEFT, y, 0);
-      else        left = i(BOTTOM, x - 1, y);
+      if (l == 0) left = i(LEFT, m, 0);
+      else        left = i(BOTTOM, l - 1, m);
 
-      if (x == N - 1) right = i(RIGHT, N - y - 1, 0);
-      else            right = i(BOTTOM, x + 1, y);
+      if (l == N - 1) right = i(RIGHT, N - m - 1, 0);
+      else            right = i(BOTTOM, l + 1, m);
 
-      if (y == 0) bottom = i(BACK, N - x - 1, 0);
-      else        bottom = i(BOTTOM, x, y - 1);
+      if (m == 0) bottom = i(BACK, N - l - 1, 0);
+      else        bottom = i(BOTTOM, l, m - 1);
 
-      if (y == N - 1) top = i(FRONT, x, 0);
-      else            top = i(BOTTOM, x, y + 1);       
+      if (m == N - 1) top = i(FRONT, l, 0);
+      else            top = i(BOTTOM, l, m + 1);       
 
    }
 
