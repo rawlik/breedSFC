@@ -126,14 +126,18 @@ bool test_all_sizes(bool (*test)(int), string name, vector<int> sizes) {
 
 int main(int argc, char **argv) {
    vector<int> Ns = {1, 2, 3, 4, 5, 10, 100};
+   vector<bool> vpass;
+
+   vpass.push_back(test_all_sizes(test_get_tiles,  "get tiles test ", Ns));
+   vpass.push_back(test_all_sizes(test_neighbours, "neighbours test", Ns));
+   vpass.push_back(test_all_sizes(test_centers,    "centers test   ", Ns));
+   vpass.push_back(test_all_sizes(test_points,     "points test    ", Ns));
 
    bool pass = true;
+   for (auto p : vpass)
+      pass = pass && p;
 
-   pass = pass && test_all_sizes(test_get_tiles,  "get tiles test ", Ns);
-   pass = pass && test_all_sizes(test_neighbours, "neighbours test", Ns);
-   pass = pass && test_all_sizes(test_centers,    "centers test   ", Ns);
-   pass = pass && test_all_sizes(test_points,     "points test    ", Ns);
-
+   // draw if passed all tests
    if (pass)
       cout << "\033[1;32m" << "✔";
    else
