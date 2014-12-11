@@ -34,10 +34,14 @@ int main(int argc, char **argv) {
       centers->SetPoint(i++, center.x(), center.y(), center.z());
 
       int j = 0;
-      TPolyLine3D * outline = new TPolyLine3D(4);
+      TPolyLine3D * outline = new TPolyLine3D(5);
+
       for (auto point : tile->getPoints()) {
          outline->SetPoint(j++, point.x(), point.y(), point.z());
       }
+      auto point = tile->getPoints()[0];
+      outline->SetPoint(j, point.x(), point.y(), point.z());
+
       outline->Draw();
    }
 
