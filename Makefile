@@ -1,7 +1,7 @@
 CC=clang++
 
 FLAGS= `root-config --cflags` -std=c++11
-LINK_FLAGS= `root-config --glibs`
+LINK_FLAGS= `root-config --glibs` -lGenVector
 
 DEPS = breedSFC.h
 PROGRAMS = playground tests
