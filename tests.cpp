@@ -163,6 +163,35 @@ bool test_getWires(int N) {
    return pass;
 }
 
+bool test_wire_Z_rotation(int N) {
+   SFCCube c = SFCCube(N);
+
+   bool pass = true;
+
+   for (auto tile : c.getTiles()) {
+      for (auto wire : tile->getWires()) {
+         auto rotation = WireToZRotation(wire[0], wire[1]);
+
+         auto new_wire0 = rotation * wire[0];
+         auto new_wire1 = rotation * wire[1];
+
+         if (!eq(new_wire0.x(), new_wire1.x())) {
+            logfile << "The rotated wire is tilted around the x axis." << endl;
+
+            pass = false;
+         }
+
+         if (!eq(new_wire0.y(), new_wire1.y())) {
+            logfile << "The rotated wire is tilted around the y axis." << endl;
+
+            pass = false;
+         }
+      }
+   }
+
+   return pass;
+}
+
 bool test_all_sizes(bool (*test)(int), string name, vector<int> sizes) {
    bool all_pass = true;
 
@@ -194,15 +223,18 @@ bool test_all_sizes(bool (*test)(int), string name, vector<int> sizes) {
 int main(int argc, char **argv) {
    logfile.open("tests.log");
 
-   vector<int> Ns = {1, 2, 3, 4, 5, 10, 100};
+   // vector<int> Ns = {1, 2, 3, 4, 5, 10, 100};
+   vector<int> Ns = {1};
+
    vector<bool> vpass;
 
-   vpass.push_back(test_all_sizes(test_get_tiles,  "get tiles test ", Ns));
-   vpass.push_back(test_all_sizes(test_neighbours, "neighbours test", Ns));
-   vpass.push_back(test_all_sizes(test_centers,    "centers test   ", Ns));
-   vpass.push_back(test_all_sizes(test_points,     "points test    ", Ns));
-   vpass.push_back(test_all_sizes(test_tile_edge,  "edges test     ", Ns));
-   vpass.push_back(test_all_sizes(test_getWires,   "getWires test  ", Ns));
+   vpass.push_back(test_all_sizes(test_get_tiles,       "get tiles test       ", Ns));
+   vpass.push_back(test_all_sizes(test_neighbours,      "neighbours test      ", Ns));
+   vpass.push_back(test_all_sizes(test_centers,         "centers test         ", Ns));
+   vpass.push_back(test_all_sizes(test_points,          "points test          ", Ns));
+   vpass.push_back(test_all_sizes(test_tile_edge,       "edges test           ", Ns));
+   vpass.push_back(test_all_sizes(test_getWires,        "getWires test        ", Ns));
+   vpass.push_back(test_all_sizes(test_wire_Z_rotation, "wire Z rotation test ", Ns));
 
    bool pass = true;
    for (auto p : vpass)
