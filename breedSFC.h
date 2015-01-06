@@ -18,6 +18,7 @@ using namespace std;
 #include <Math/RotationZ.h>
 #include <Math/AxisAngle.h>
 #include <Math/Rotation3D.h>
+#include <Math/Translation3D.h>
 #include <TMath.h>
 
 using namespace ROOT::Math;
@@ -31,6 +32,7 @@ typedef double coordinate;
 bool eq(coordinate a, coordinate b);
 
 Rotation3D WireToZRotation(XYZPoint wire_a, XYZPoint wire_b);
+Translation3D ZWireToOriginTranslation(XYZPoint wire_a, XYZPoint wire_b);
 
 enum face_t {
    LEFT = 0,
