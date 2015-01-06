@@ -35,6 +35,27 @@ Translation3D ZWireToOriginTranslation(XYZPoint wire_a, XYZPoint wire_b) {
    return Translation3D(-wire_a.x(), -wire_a.y(), 0);
 }
 
+Transform3D WireAndPointTarnsform(XYZPoint wire_a, XYZPoint wire_b, XYZPoint point) {
+   auto rotation = WireToZRotation(wire_a, wire_b);
+
+   wire_a = rotation * wire_a;
+   wire_b = rotation * wire_b;
+
+   auto translation = ZWireToOriginTranslation(wire_a, wire_b);
+
+   wire_a = translation * wire_a;
+   wire_b = translation * wire_b;
+   point = (translation * rotation) * point;
+
+   auto rotation2 = RotationZ();
+
+   if (!eq(point.x(), 0)) {
+      rotation2 = RotationZ(-atan(point.y() / point.x()));
+   }
+
+   return rotation2 * translation * rotation;
+}
+
 array< Tile*, 4 > Tile::neighbours() {
    return cube->neighbours(face, l, m);
 }

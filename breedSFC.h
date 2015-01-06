@@ -19,7 +19,9 @@ using namespace std;
 #include <Math/AxisAngle.h>
 #include <Math/Rotation3D.h>
 #include <Math/Translation3D.h>
+#include <Math/Transform3D.h>
 #include <TMath.h>
+#include <TRandom.h>
 
 using namespace ROOT::Math;
 using namespace TMath;
@@ -33,6 +35,7 @@ bool eq(coordinate a, coordinate b);
 
 Rotation3D WireToZRotation(XYZPoint wire_a, XYZPoint wire_b);
 Translation3D ZWireToOriginTranslation(XYZPoint wire_a, XYZPoint wire_b);
+Transform3D WireAndPointTarnsform(XYZPoint wire_a, XYZPoint wire_b, XYZPoint point);
 
 enum face_t {
    LEFT = 0,
