@@ -238,6 +238,71 @@ bool test_WireAndPointTarnsform(int N) {
    return pass;
 }
 
+bool test_BfromWire_symmetry() {
+   TRandom r;
+
+   auto random_z = r.Rndm();
+   auto random_x = r.Rndm();
+   auto random_y = r.Rndm();
+
+   bool pass = true;
+
+   auto B = BfromWire({0, 0, -random_z}, {0, 0, random_z}, {random_x, random_y, 0});
+
+   if (!eq(B.z(), 0)) {
+      logfile << "BfromWire retured Bz = " << B.z() << " for symmetric wire. ";
+      logfile << "Expected 0." << endl;
+
+      pass = false;
+   }
+
+   return pass;
+}
+
+bool test_BfromWire_perpendicular() {
+   TRandom r;
+
+   auto random_z1 = r.Rndm();
+   auto random_z2 = r.Rndm();
+   auto random_z3 = r.Rndm();
+   auto random_x = r.Rndm();
+   auto random_y = r.Rndm();
+
+   bool pass = true;
+
+   auto B = BfromWire({0, 0, random_z1}, {0, 0, random_z2}, {random_x, random_y, random_z3});
+
+   if (!eq(B.x() * random_y, B.y() * random_x)) {
+      logfile << "B in the point is not perpendicular to the wire.";
+
+      pass = false;
+   }
+
+   return pass;
+}
+
+bool test_simple(bool (*test)(), string name) {
+   cout << "    " << name << ": ";
+
+  bool pass = test();
+
+   if (pass)
+      cout << "\033[1;32m" << "✓ ";
+   else {
+      cout << "\033[1;31m" << "✘ ";
+   }
+
+   cout << '\r';
+   if (pass)
+      cout << "\033[1;32m" << "✔";
+   else
+      cout << "\033[1;31m" << "✗ ";
+
+   cout << "\033[0m" << endl;
+
+   return pass;
+}
+
 bool test_all_sizes(bool (*test)(int), string name, vector<int> sizes) {
    bool all_pass = true;
 
@@ -282,6 +347,9 @@ int main(int argc, char **argv) {
    vpass.push_back(test_all_sizes(test_getWires,              "getWires test                   ", Ns));
    vpass.push_back(test_all_sizes(test_wire_Z_rotation,       "wire Z rotation test            ", Ns));
    vpass.push_back(test_all_sizes(test_WireAndPointTarnsform, "test_WireAndPointTarnsform test ", Ns));
+
+   vpass.push_back(test_simple(test_BfromWire_symmetry,       "test_BfromWire symmetry test    "));
+   vpass.push_back(test_simple(test_BfromWire_perpendicular,  "test_BfromWire perp.    test    "));
 
    bool pass = true;
    for (auto p : vpass)
