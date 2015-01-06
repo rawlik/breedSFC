@@ -192,6 +192,52 @@ bool test_wire_Z_rotation(int N) {
    return pass;
 }
 
+bool test_WireAndPointTarnsform(int N) {
+   SFCCube c = SFCCube(N);
+
+   TRandom r;
+
+   bool pass = true;
+
+   for (auto tile : c.getTiles()) {
+      for (auto wire : tile->getWires()) {
+         // XYZPoint point = XYZPoint(r.Rndm(), r.Rndm(), r.Rndm());
+         XYZPoint point = XYZPoint(0, 0, 0);
+
+         auto transform = WireAndPointTarnsform(wire[0], wire[1], point);
+
+         auto new_point = transform * point;
+         auto new_wire0 = transform * wire[0];
+         auto new_wire1 = transform * wire[1];
+
+         if (!eq(new_point.y(), 0)) {
+            logfile << "The point after the WireAndPointTarnsform has y=" << new_point.y();
+            logfile << ". 0 expected." << endl;
+
+            pass = false;
+         }
+
+         for (auto new_wire : { new_wire0, new_wire1 }) {
+            if (!eq(new_wire.x(), 0)) {
+               logfile << "The wire point after the WireAndPointTarnsform has x=" << new_wire.x();
+               logfile << ". 0 expected." << endl;
+
+               pass = false;
+            }
+
+            if (!eq(new_wire.y(), 0)) {
+               logfile << "The wire point after the WireAndPointTarnsform has y=" << new_wire.y();
+               logfile << ". 0 expected." << endl;
+
+               pass = false;
+            }
+         }
+      }
+   }
+
+   return pass;
+}
+
 bool test_all_sizes(bool (*test)(int), string name, vector<int> sizes) {
    bool all_pass = true;
 
@@ -228,13 +274,14 @@ int main(int argc, char **argv) {
 
    vector<bool> vpass;
 
-   vpass.push_back(test_all_sizes(test_get_tiles,       "get tiles test       ", Ns));
-   vpass.push_back(test_all_sizes(test_neighbours,      "neighbours test      ", Ns));
-   vpass.push_back(test_all_sizes(test_centers,         "centers test         ", Ns));
-   vpass.push_back(test_all_sizes(test_points,          "points test          ", Ns));
-   vpass.push_back(test_all_sizes(test_tile_edge,       "edges test           ", Ns));
-   vpass.push_back(test_all_sizes(test_getWires,        "getWires test        ", Ns));
-   vpass.push_back(test_all_sizes(test_wire_Z_rotation, "wire Z rotation test ", Ns));
+   vpass.push_back(test_all_sizes(test_get_tiles,             "get tiles test                  ", Ns));
+   vpass.push_back(test_all_sizes(test_neighbours,            "neighbours test                 ", Ns));
+   vpass.push_back(test_all_sizes(test_centers,               "centers test                    ", Ns));
+   vpass.push_back(test_all_sizes(test_points,                "points test                     ", Ns));
+   vpass.push_back(test_all_sizes(test_tile_edge,             "edges test                      ", Ns));
+   vpass.push_back(test_all_sizes(test_getWires,              "getWires test                   ", Ns));
+   vpass.push_back(test_all_sizes(test_wire_Z_rotation,       "wire Z rotation test            ", Ns));
+   vpass.push_back(test_all_sizes(test_WireAndPointTarnsform, "test_WireAndPointTarnsform test ", Ns));
 
    bool pass = true;
    for (auto p : vpass)
