@@ -56,6 +56,36 @@ Transform3D WireAndPointTarnsform(XYZPoint wire_a, XYZPoint wire_b, XYZPoint poi
    return rotation2 * translation * rotation;
 }
 
+XYZVector BfromWire(XYZPoint wire_a, XYZPoint wire_b, XYZPoint point){
+   auto transform = WireAndPointTarnsform(wire_a, wire_b, point);
+
+   wire_a = transform * wire_a;
+   wire_b = transform * wire_b;
+   point = transform * point;
+
+   auto Bx = TF1("Bx", "[0] * ([0]^2 + x^2)^(-3/2)", wire_a.z(), wire_b.z());
+   auto Bz = TF1("Bz", "x   * ([0]^2 + x^2)^(-3/2)", wire_a.z(), wire_b.z());
+   Bx.SetParameter(0, point.x());
+   Bz.SetParameter(0, point.x());
+   auto wrappedBx = WrappedTF1(Bx);
+   auto wrappedBz = WrappedTF1(Bz);
+
+   GSLIntegrator integrator(IntegrationOneDim::kADAPTIVE);
+   integrator.SetRelTolerance(0.001);
+
+   integrator.SetFunction(wrappedBx);
+   auto Bx_value = integrator.Integral(wire_a.z(), wire_b.z());
+
+   integrator.SetFunction(wrappedBz);
+   auto Bz_value = integrator.Integral(wire_a.z(), wire_b.z());
+
+   XYZVector B({ Bx_value, 0, Bz_value });
+
+   B = transform.Inverse() * B;
+
+   return B;
+}
+
 array< Tile*, 4 > Tile::neighbours() {
    return cube->neighbours(face, l, m);
 }
