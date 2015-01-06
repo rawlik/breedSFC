@@ -4,6 +4,34 @@ bool eq(coordinate a, coordinate b) {
    return fabs(a - b) < coordinate(1e-6);
 }
 
+
+Rotation3D RotateWireToZ(XYZPoint wire_a, XYZPoint wire_b) {
+   coordinate dx = wire_b.x() - wire_a.x();
+   coordinate dy = wire_b.y() - wire_a.y();
+   coordinate dz = wire_b.z() - wire_a.y();
+
+   if (dx == 0 and dy == 0) {
+      // identity rotation
+      return Rotation3D();
+   } else {
+      coordinate xp = dy / sqrt(Power(dx, 2) + Power(dy, 2));
+      coordinate yp = sqrt(1 - Power(xp, 2));
+
+      XYZVector rotation_vector = XYZVector(xp, yp, 0);
+
+      coordinate angle;
+
+      if (dz == 0) {
+         angle = pi2;
+      } else {
+         coordinate foo = Power(wire_b.x() - wire_a.x(), 2) + Power(wire_b.y() - wire_a.y(), 2);
+         angle = atan(sqrt(foo) / wire_b.z() - wire_a.z());
+      }
+
+      return Rotation3D(AxisAngle(rotation_vector, angle));
+   }
+}
+
 array< Tile*, 4 > Tile::neighbours() {
    return cube->neighbours(face, l, m);
 }

@@ -16,10 +16,12 @@ using namespace std;
 #include <Math/RotationX.h>
 #include <Math/RotationY.h>
 #include <Math/RotationZ.h>
+#include <Math/AxisAngle.h>
 #include <Math/Rotation3D.h>
 #include <TMath.h>
 
 using namespace ROOT::Math;
+using namespace TMath;
 
 const auto pi = TMath::Pi();
 const auto pi2 = TMath::Pi() / 2.;
@@ -27,6 +29,8 @@ const auto pi2 = TMath::Pi() / 2.;
 typedef double coordinate;
 
 bool eq(coordinate a, coordinate b);
+
+Rotation3D RotateWireToZ(XYZPoint wire_a, XYZPoint wire_b);
 
 enum face_t {
    LEFT = 0,
