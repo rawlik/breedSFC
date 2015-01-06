@@ -101,6 +101,19 @@ array<XYZPoint, 4> Tile::getPoints() {
    return points;
 }
 
+array<array<XYZPoint, 2>, 4> Tile::getWires() {
+   array<array<XYZPoint, 2>, 4> wires;
+
+   auto points = getPoints();
+
+   wires[0] = { points[0], points[1] };
+   wires[1] = { points[1], points[2] };
+   wires[2] = { points[2], points[3] };
+   wires[3] = { points[3], points[0] };
+
+   return wires;
+}
+
 Face::Face(int Nrows, int Ncols) : Nrows(Nrows), Ncols(Ncols) {
    tiles = new Tile[Nrows * Ncols];
 }

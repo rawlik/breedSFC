@@ -61,6 +61,7 @@ public:
    XYZPoint getCenter();
    string str();
    array<XYZPoint, 4> getPoints();
+   array<array<XYZPoint, 2>, 4> getWires();
 };
 
 class Face {
