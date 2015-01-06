@@ -5,7 +5,7 @@ bool eq(coordinate a, coordinate b) {
 }
 
 
-Rotation3D RotateWireToZ(XYZPoint wire_a, XYZPoint wire_b) {
+Rotation3D WireToZRotation(XYZPoint wire_a, XYZPoint wire_b) {
    coordinate dx = wire_b.x() - wire_a.x();
    coordinate dy = wire_b.y() - wire_a.y();
    coordinate dz = wire_b.z() - wire_a.y();

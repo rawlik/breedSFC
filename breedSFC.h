@@ -30,7 +30,7 @@ typedef double coordinate;
 
 bool eq(coordinate a, coordinate b);
 
-Rotation3D RotateWireToZ(XYZPoint wire_a, XYZPoint wire_b);
+Rotation3D WireToZRotation(XYZPoint wire_a, XYZPoint wire_b);
 
 enum face_t {
    LEFT = 0,
