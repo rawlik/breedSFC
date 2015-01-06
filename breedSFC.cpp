@@ -24,8 +24,7 @@ Rotation3D WireToZRotation(XYZPoint wire_a, XYZPoint wire_b) {
       if (dz == 0) {
          angle = pi2;
       } else {
-         coordinate foo = Power(wire_b.x() - wire_a.x(), 2) + Power(wire_b.y() - wire_a.y(), 2);
-         angle = atan(sqrt(foo) / wire_b.z() - wire_a.z());
+         angle = atan(sqrt(Power(dx, 2) + Power(dy, 2)) / dz);
       }
 
       return Rotation3D(AxisAngle(rotation_vector, angle));
