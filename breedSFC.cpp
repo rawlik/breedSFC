@@ -168,6 +168,17 @@ array<array<XYZPoint, 2>, 4> Tile::getWires() {
    return wires;
 }
 
+XYZVector Tile::Bresponse(XYZPoint point){
+   XYZVector B;
+
+   for (auto wire : getWires()) {
+      B += BfromWire(wire[0], wire[1], point);
+   }
+
+   return B;
+}
+
+
 Face::Face(int Nrows, int Ncols) : Nrows(Nrows), Ncols(Ncols) {
    tiles = new Tile[Nrows * Ncols];
 }
