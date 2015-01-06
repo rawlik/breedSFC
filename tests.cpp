@@ -143,6 +143,26 @@ bool test_tile_edge(int N) {
    return pass;
 }
 
+bool test_getWires(int N) {
+   SFCCube c = SFCCube(N);
+
+   bool pass = true;
+
+   for (auto tile : c.getTiles()) {
+      for (auto wire : tile->getWires()) {
+         auto wire_length = sqrt((wire[1] - wire[0]).Mag2());
+         if (!eq(wire_length, coordinate(1) / c.N)) {
+            logfile << "Length of a wire is " << wire_length << ". ";
+            logfile << "Expected " << coordinate(1) / c.N << ". " << endl;
+
+            pass = false;
+         }
+      }
+   }
+
+   return pass;
+}
+
 bool test_all_sizes(bool (*test)(int), string name, vector<int> sizes) {
    bool all_pass = true;
 
@@ -182,6 +202,7 @@ int main(int argc, char **argv) {
    vpass.push_back(test_all_sizes(test_centers,    "centers test   ", Ns));
    vpass.push_back(test_all_sizes(test_points,     "points test    ", Ns));
    vpass.push_back(test_all_sizes(test_tile_edge,  "edges test     ", Ns));
+   vpass.push_back(test_all_sizes(test_getWires,   "getWires test  ", Ns));
 
    bool pass = true;
    for (auto p : vpass)
